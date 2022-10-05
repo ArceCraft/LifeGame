@@ -1,6 +1,8 @@
 
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Scanner;
 
 
@@ -18,17 +20,39 @@ public class Tablero {
     public static void main (String[] args) throws InterruptedException{
 
         universe = universeInicializer(universe);
-        tempUniverse = universe;
+        tempUniverse = ArrayCloner(universe);
         universePrinter(universe);
+        universePrinter(tempUniverse);
 
         while(continuar){
             genCounter += 1;
-            Thread.sleep(100);
+            Thread.sleep(1000);
             clearScreen();
+
+            tempUniverse = ArrayCloner(universe);
+
             universe = CheckEachCellOfArray(universe);
+
             universePrinter(universe);
             System.out.println("Generacion: " + genCounter);
+
+            boolean result = ArrayComparator(universe,tempUniverse);
+
+            if(result)
+                repCounter +=1;
+
+            else
+                repCounter = 0;
+
+            if (repCounter >= 4)
+                continuar = false;
+
+
         }
+
+        System.out.println("Salió del sistema");
+
+
 
 
 
@@ -39,8 +63,7 @@ public class Tablero {
         System.out.println("Introduzca el lado de su array: ");
         int length = sc.nextInt();
         arrayUniverse = new boolean[length][length];
-        System.out.println("Introduzca el porcentage de celulas en total que deben de aparecer: ");
-        int percentAlive = sc.nextInt();
+
         System.out.println("Selecciono metodo de inicializacion de espacio: ");
         System.out.println("1. Manual");
         System.out.println("2. Automatico");
@@ -50,12 +73,12 @@ public class Tablero {
         switch (mode){
             case 1:
                 System.out.println("Modo Manual seleccionado. ");
-                arrayUniverse = universeManualFiller(arrayUniverse,percentAlive);
+                arrayUniverse = universeManualFiller(arrayUniverse);
 
                 break;
             case 2:
                 System.out.println("Modo Automatico seleccionado. ");
-                arrayUniverse = universeAutomaticFiller(arrayUniverse,percentAlive);
+                arrayUniverse = universeAutomaticFiller(arrayUniverse);
                 break;
             case 3:
                 System.out.println("Modo Predeterminado seleccionado. ");
@@ -74,15 +97,48 @@ public class Tablero {
                 if(arrayUniverse[i][j])
                     System.out.print(" ⭓ ");
                 else
-                    System.out.print("   ");
+                    System.out.print(" ⭔ ");
             }
         }
 
         System.out.println();
     }
 
-    static boolean[][] universeAutomaticFiller(boolean[][] arrayUniverse, int percentAlive){
+    static  boolean[][] ArrayCloner(boolean[][] universe){
 
+        boolean[][] clonedUniverse = new boolean[universe.length][universe.length];
+
+        for (int i = 0; i < universe.length ; i++) {
+            for (int j = 0; j < universe.length; j++) {
+                clonedUniverse[i][j] = universe[i][j];
+            }
+        }
+
+        return clonedUniverse;
+
+    }
+
+    static boolean ArrayComparator(boolean[][] universe, boolean[][] tempUniverse){
+
+        boolean logicValue = true;
+        boolean universeValue;
+        boolean tempUniverseValue;
+        for (int i = 0; i <  universe.length; i++) {
+            for (int j = 0; j < universe.length ; j++) {
+                if(universe[i][j] != tempUniverse[i][j]){
+                    logicValue = false;
+                    break;
+                }
+            }
+        }
+
+        return logicValue;
+    }
+
+    static boolean[][] universeAutomaticFiller(boolean[][] arrayUniverse){
+
+        System.out.println("Introduzca el porcentage de celulas en total que deben de aparecer: ");
+        int percentAlive = sc.nextInt();
 
         for (int i = 0; i < arrayUniverse.length ; i++) {
             for (int j = 0; j < arrayUniverse.length ; j++) {
@@ -111,7 +167,7 @@ public class Tablero {
             System.out.println((i+1)+"."+ predeterminedShapesNames[i]);
         }
         byte figureIndex;
-        System.out.print("Escriba el numero de la figura que desae visualizar: ");
+        System.out.print("Escriba el numero de la figura que desea visualizar: ");
         figureIndex = sc.nextByte();
         figureIndex = (byte) (figureIndex - 1);
         for (int i = 0; i <arrayOfPredeterminedShapes[figureIndex].length; i++) {
@@ -123,21 +179,24 @@ public class Tablero {
         return arrayUniverse;
     }
 
-    static boolean[][] universeManualFiller(boolean[][] arrayUniverse, int percentAlive) {
+    static boolean[][] universeManualFiller(boolean[][] arrayUniverse) {
+
 
         for (int i = 0; i < arrayUniverse.length; i++) {
             for (int j = 0; j < arrayUniverse.length; j++) {
                 arrayUniverse[i][j] = false;
             }
         }
+        System.out.println("Introduzca el porcentage de celulas en total que deben de aparecer: ");
+        int percentAlive = sc.nextInt();
 
         int cellQuantity = ((arrayUniverse.length) * (arrayUniverse.length) * (percentAlive))/100;
 
         System.out.println("Cantidad de celdas a ingresar: " + cellQuantity + "En un espacio de: " + arrayUniverse.length * arrayUniverse.length);
 
         System.out.println("Desea cambiar el numero de celdas a ingresar: ");
-        System.out.println("1. Ok, pa.");
-        System.out.println("2. No, tas enfermo, pa.");
+        System.out.println("1. Si");
+        System.out.println("2. No");
         byte decision = sc.nextByte();
 
         switch (decision){
