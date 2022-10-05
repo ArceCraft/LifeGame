@@ -1,8 +1,4 @@
 
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Scanner;
 
 
@@ -19,19 +15,20 @@ public class Tablero {
 
     public static void main (String[] args) throws InterruptedException{
 
-        universe = universeInicializer(universe);
+        universe = universeInicializer();
         tempUniverse = ArrayCloner(universe);
         universePrinter(universe);
         universePrinter(tempUniverse);
 
         while(continuar){
             genCounter += 1;
-            Thread.sleep(1000);
+            Thread.sleep(200);
             clearScreen();
 
             tempUniverse = ArrayCloner(universe);
+            CheckEachCellOfArray(universe);
 
-            universe = CheckEachCellOfArray(universe);
+            //universe = CheckEachCellOfArray(universe);
 
             universePrinter(universe);
             System.out.println("Generacion: " + genCounter);
@@ -47,61 +44,92 @@ public class Tablero {
             if (repCounter >= 4)
                 continuar = false;
 
-
         }
 
         System.out.println("Salió del sistema");
 
-
-
-
-
-
     }
 
-    static boolean[][] universeInicializer(boolean[][] arrayUniverse){
-        System.out.println("Introduzca el lado de su array: ");
-        int length = sc.nextInt();
-        arrayUniverse = new boolean[length][length];
+    static boolean[][] universeInicializer(){
 
-        System.out.println("Selecciono metodo de inicializacion de espacio: ");
-        System.out.println("1. Manual");
-        System.out.println("2. Automatico");
-        System.out.println("3. Predeterminado, Pa");
-        int mode = sc.nextInt();
+        byte length = 2;
+        byte mode = 0;
+        boolean errorProof = true;
+
+        while (errorProof){
+            System.out.println(" Por favor, introduzca el lado de su array en un rango de 0 a 25: ");
+            length = sc.nextByte();
+            if(length < 2 || length > 25)
+                System.out.println("Error: Numero no valido.");
+            else
+                errorProof = false;
+        }
+
+
+        boolean[][] arrayUniverse = new boolean[length][length];
+        errorProof = true;
+        while (errorProof){
+
+            System.out.println("Por favor, Seleccione uno de los siguientes metodos de inicializacion de espacio: ");
+            System.out.println("1. Manual");
+            System.out.println("2. Automatico");
+            System.out.println("3. Predeterminado");
+            mode = sc.nextByte();
+
+            if(mode > 3 || mode <= 0)
+                System.out.println("Seleccion no valida.");
+            else
+                errorProof = false;
+
+
+        }
+
 
         switch (mode){
             case 1:
                 System.out.println("Modo Manual seleccionado. ");
-                arrayUniverse = universeManualFiller(arrayUniverse);
+                universeManualFiller(arrayUniverse);
 
                 break;
             case 2:
                 System.out.println("Modo Automatico seleccionado. ");
-                arrayUniverse = universeAutomaticFiller(arrayUniverse);
+                universeAutomaticFiller(arrayUniverse);
                 break;
             case 3:
                 System.out.println("Modo Predeterminado seleccionado. ");
-                arrayUniverse = universePredeterminedFiller(arrayUniverse);
+                universePredeterminedFiller(arrayUniverse);
                 break;
         }
 
-        return  arrayUniverse;
+        return arrayUniverse;
     }
 
 
     static void universePrinter(boolean[][] arrayUniverse){
+        System.out.print("╔");
+        for (int i = 0; i < arrayUniverse.length; i++) {
+            System.out.print("===");
+        }
+        System.out.print("╗");
         for (int i = 0; i < arrayUniverse.length; i++) {
             System.out.println();
+            System.out.print("║");
             for (int j = 0; j < arrayUniverse.length; j++) {
                 if(arrayUniverse[i][j])
-                    System.out.print(" ⭓ ");
+                    System.out.print("▓▓ ");
                 else
-                    System.out.print(" ⭔ ");
+                    System.out.print("   ");
             }
+            System.out.print("║");
         }
 
         System.out.println();
+
+        System.out.print("╚");
+        for (int i = 0; i < arrayUniverse.length; i++) {
+            System.out.print("===");
+        }
+        System.out.println("╝");
     }
 
     static  boolean[][] ArrayCloner(boolean[][] universe){
@@ -109,9 +137,7 @@ public class Tablero {
         boolean[][] clonedUniverse = new boolean[universe.length][universe.length];
 
         for (int i = 0; i < universe.length ; i++) {
-            for (int j = 0; j < universe.length; j++) {
-                clonedUniverse[i][j] = universe[i][j];
-            }
+            System.arraycopy(universe[i], 0, clonedUniverse[i], 0, universe.length);
         }
 
         return clonedUniverse;
@@ -121,8 +147,6 @@ public class Tablero {
     static boolean ArrayComparator(boolean[][] universe, boolean[][] tempUniverse){
 
         boolean logicValue = true;
-        boolean universeValue;
-        boolean tempUniverseValue;
         for (int i = 0; i <  universe.length; i++) {
             for (int j = 0; j < universe.length ; j++) {
                 if(universe[i][j] != tempUniverse[i][j]){
@@ -136,9 +160,17 @@ public class Tablero {
     }
 
     static boolean[][] universeAutomaticFiller(boolean[][] arrayUniverse){
+        boolean errorProof = true;
+        byte percentAlive = 0;
 
-        System.out.println("Introduzca el porcentage de celulas en total que deben de aparecer: ");
-        int percentAlive = sc.nextInt();
+        while (errorProof){
+            System.out.println("Introduzca de 0 a 100 el porcentaje de celulas en total que deben de aparecer: ");
+            percentAlive = sc.nextByte();
+            if(percentAlive<0 || percentAlive>100)
+                System.out.println("Error: Porcentaje no valido");
+            else
+                errorProof = false;
+        }
 
         for (int i = 0; i < arrayUniverse.length ; i++) {
             for (int j = 0; j < arrayUniverse.length ; j++) {
@@ -166,8 +198,9 @@ public class Tablero {
         for (int i = 0; i < arrayOfPredeterminedShapes.length; i++) {
             System.out.println((i+1)+"."+ predeterminedShapesNames[i]);
         }
+
         byte figureIndex;
-        System.out.print("Escriba el numero de la figura que desea visualizar: ");
+        System.out.print("Escriba el numero (1 a " + arrayOfPredeterminedShapes.length + " ) de la figura que desea visualizar: ");
         figureIndex = sc.nextByte();
         figureIndex = (byte) (figureIndex - 1);
         for (int i = 0; i <arrayOfPredeterminedShapes[figureIndex].length; i++) {
@@ -180,24 +213,46 @@ public class Tablero {
     }
 
     static boolean[][] universeManualFiller(boolean[][] arrayUniverse) {
-
+        boolean errorProof = true;
+        byte percentAlive = 0;
+        byte decision = 0;
 
         for (int i = 0; i < arrayUniverse.length; i++) {
             for (int j = 0; j < arrayUniverse.length; j++) {
                 arrayUniverse[i][j] = false;
             }
         }
-        System.out.println("Introduzca el porcentage de celulas en total que deben de aparecer: ");
-        int percentAlive = sc.nextInt();
+        while (errorProof){
+            System.out.println("Introduzca de 0 a 100 el porcentaje de celulas en total que deben de aparecer: ");
+            percentAlive = sc.nextByte();
+            if(percentAlive<0 || percentAlive>100)
+                System.out.println("Error: Porcentaje no valido");
+            else
+                errorProof = false;
+        }
+
+        errorProof = true;
 
         int cellQuantity = ((arrayUniverse.length) * (arrayUniverse.length) * (percentAlive))/100;
 
         System.out.println("Cantidad de celdas a ingresar: " + cellQuantity + "En un espacio de: " + arrayUniverse.length * arrayUniverse.length);
 
-        System.out.println("Desea cambiar el numero de celdas a ingresar: ");
-        System.out.println("1. Si");
-        System.out.println("2. No");
-        byte decision = sc.nextByte();
+        System.out.println(" ¿Desea cambiar el numero de celdas a ingresar? ");
+
+        while (errorProof){
+            System.out.println("Seleccione: ");
+            System.out.println("1. Si");
+            System.out.println("2. No");
+
+            decision = sc.nextByte();
+
+            if(decision !=1 || decision != 2 )
+                System.out.println("Opción no valida.");
+            else
+                errorProof = false;
+        }
+
+
 
         switch (decision){
             case 1:
@@ -249,7 +304,7 @@ public class Tablero {
     static byte CheckNeighborsOfCell(int y, int x, boolean[][] arrayOfCellsClone){
         byte aliveCounter = 0;
         //Este Loop For nos servirá para revisar las 8 posibles celdas de nuestra celda con coordenadas x y y
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < arrayOfDirections.length; i++) {
             //Condición If que nos permite quedarnos dentro de los limites de nuestro arrayTablero
             if(y+arrayOfDirections[i][0] < 0 || y+arrayOfDirections[i][0] >= arrayOfCellsClone.length || x+arrayOfDirections[i][1] < 0 || x+arrayOfDirections[i][1] >= arrayOfCellsClone.length)
                 continue;
@@ -257,9 +312,6 @@ public class Tablero {
                 aliveCounter += 1;
         }
         return aliveCounter;
-
-
-
     }
 
 
@@ -296,6 +348,7 @@ public class Tablero {
     //Empezando por el lado derecho en contra se las manechillas del relog:
     // (x+1) --> (x+1, y+1) --> (y+1) --> (x-1,y+1) --> (x-1) --> (x-1, y-1) --> (y-1) --> (x+1, y-1)
 
+    //El siguiente array nos ayuda como auxiliar para seguir el orden de comprobacion anteriormente mencionado.
      static byte[][] arrayOfDirections = {
             { 0, 1}, //(x+1)
             { 1, 1}, //(x+1, y+1)
@@ -315,7 +368,7 @@ public class Tablero {
             {2,1},
             {2,2},
     };
-    static byte[][] arrayWTF = {
+    static byte[][] arrayCaos = {
             {0,1},
             {0,2},
             {1,2},
@@ -326,7 +379,7 @@ public class Tablero {
 
     static  byte[][][] arrayOfPredeterminedShapes = {
         arraySpacePlane,
-        arrayWTF
+        arrayCaos
     };
 
     static String[] predeterminedShapesNames = {
@@ -337,7 +390,6 @@ public class Tablero {
 
 
 }
-
 
 
 /*Suponga tenga un array de [3][3]
