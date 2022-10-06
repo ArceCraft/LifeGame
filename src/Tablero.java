@@ -58,7 +58,7 @@ public class Tablero {
 
         while (errorProof){
             System.out.println(" Por favor, introduzca el lado de su array en un rango de 0 a 25: ");
-            length = sc.nextByte();
+            length = (byte) sc.nextDouble();
             if(length < 2 || length > 25)
                 System.out.println("Error: Numero no valido.");
             else
@@ -165,7 +165,7 @@ public class Tablero {
 
         while (errorProof){
             System.out.println("Introduzca de 0 a 100 el porcentaje de celulas en total que deben de aparecer: ");
-            percentAlive = sc.nextByte();
+            percentAlive = (byte) sc.nextDouble();
             if(percentAlive<0 || percentAlive>100)
                 System.out.println("Error: Porcentaje no valido");
             else
@@ -187,7 +187,7 @@ public class Tablero {
 
     static boolean[][] universePredeterminedFiller(boolean[][] arrayUniverse){
 
-
+        boolean errorProf = true;
         for (int i = 0; i < arrayUniverse.length; i++) {
             for (int j = 0; j < arrayUniverse.length; j++) {
                 arrayUniverse[i][j] = false;
@@ -199,10 +199,21 @@ public class Tablero {
             System.out.println((i+1)+"."+ predeterminedShapesNames[i]);
         }
 
-        byte figureIndex;
-        System.out.print("Escriba el numero (1 a " + arrayOfPredeterminedShapes.length + " ) de la figura que desea visualizar: ");
-        figureIndex = sc.nextByte();
-        figureIndex = (byte) (figureIndex - 1);
+        byte figureIndex = 1;
+        while(errorProf){
+
+            System.out.print("Escriba el numero (1 a " + arrayOfPredeterminedShapes.length + ") de la figura que desea visualizar: ");
+            figureIndex = (byte) sc.nextDouble();
+            figureIndex = (byte) (figureIndex - 1);
+            if(figureIndex<1 || figureIndex >= arrayOfPredeterminedShapes.length){
+                System.out.println("Indice de figura no valida");
+            }
+            else
+                errorProf=false;
+
+        }
+
+
         for (int i = 0; i <arrayOfPredeterminedShapes[figureIndex].length; i++) {
             arrayUniverse[arrayOfPredeterminedShapes[figureIndex][i][0]][arrayOfPredeterminedShapes[figureIndex][i][1]] = true;
         }
@@ -224,7 +235,7 @@ public class Tablero {
         }
         while (errorProof){
             System.out.println("Introduzca de 0 a 100 el porcentaje de celulas en total que deben de aparecer: ");
-            percentAlive = sc.nextByte();
+            percentAlive = (byte) sc.nextDouble();
             if(percentAlive<0 || percentAlive>100)
                 System.out.println("Error: Porcentaje no valido");
             else
@@ -244,7 +255,7 @@ public class Tablero {
             System.out.println("1. Si");
             System.out.println("2. No");
 
-            decision = sc.nextByte();
+            decision = (byte) sc.nextDouble();
 
             if(decision !=1 || decision != 2 )
                 System.out.println("Opción no valida.");
@@ -257,22 +268,31 @@ public class Tablero {
         switch (decision){
             case 1:
                 System.out.println("Numero de celdas a ingresar deseado: ");
-                cellQuantity = sc.nextInt();
+                cellQuantity = (int) sc.nextDouble();
                 break;
             case 2:
-                System.out.println("Ok, pa.");
+                System.out.println("Seguir con las celdas establecidas por el porcentaje.");
                 break;
         }
+
 
         int xCord = 0;
         int yCord = 0;
         for (int i = 0; i < cellQuantity; i++) {
-            System.out.println("Celda: " + i);
-            System.out.println("Coordenada X: ");
-            xCord = sc.nextInt();
-            System.out.println("Coordenada Y: ");
-            yCord = sc.nextInt();
-            arrayUniverse[yCord][xCord] = true;
+            errorProof = true;
+            while(errorProof){
+                System.out.println("Celda: " + i);
+                System.out.println("Coordenada X: ");
+                xCord = (int) sc.nextDouble();
+                System.out.println("Coordenada Y: ");
+                yCord = (int) sc.nextDouble();
+                if(yCord<0 || yCord>=arrayUniverse.length || xCord<0 || xCord>=arrayUniverse.length )
+                    System.out.println("Coordenada ingresada no válida, por favor, vuelvala a introducir. ");
+                else{
+                    arrayUniverse[yCord][xCord] = true;
+                    errorProof = false;
+                }
+            }
         }
 
 
