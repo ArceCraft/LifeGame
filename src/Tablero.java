@@ -9,20 +9,18 @@ public class Tablero {
     static Scanner sc = new Scanner(System.in);
     static boolean[][] universe;
     static boolean[][] tempUniverse;
-    static boolean continuar = true;
+    private static boolean continuar = true;
     static int genCounter = 0;
     static byte repCounter = 0;
 
-    public static void main (String[] args) throws InterruptedException{
+    public static void simulation(){
 
         universe = universeInicializer();
         tempUniverse = ArrayCloner(universe);
         universePrinter(universe);
-        universePrinter(tempUniverse);
 
         while(continuar){
             genCounter += 1;
-            Thread.sleep(200);
             clearScreen();
 
             tempUniverse = ArrayCloner(universe);
